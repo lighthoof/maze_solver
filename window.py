@@ -25,5 +25,8 @@ class Window():
     def draw_line(self, line, fill_color):
         line.draw(self.canvas, fill_color)
 
-    def draw_cell(self, cell, fill_color):
-        cell.draw(self.canvas, fill_color)
+    def draw_cell(self, cell):
+        cell.draw(self.canvas)
+
+    def draw_move(self, cell1 , cell2):
+        cell1.draw_move(cell2, self.canvas)
