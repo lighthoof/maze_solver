@@ -1,4 +1,5 @@
 from shapes import Cell, Point
+import time
 
 class Maze():
     def __init__(
@@ -9,7 +10,7 @@ class Maze():
         num_cols,
         cell_size_x,
         cell_size_y,
-        win,
+        win = None,
     ):
         self.x1 = x1
         self.y1 = y1
@@ -44,8 +45,13 @@ class Maze():
                             Point((i+1)*self.cell_size_x, (j+1)*self.cell_size_y)
                             )
                         )
-        
-        self._draw_cells(self, i, j)
+            self._cells.append(column)
+                    
+        for column in self._cells:
+            for cell in column:
+                cell.draw()
+                self._animate()
 
-    def _draw_cells(self, i, j):
-        pass
+    def _animate(self):
+        self.win.redraw()
+        time.sleep(0.05)
