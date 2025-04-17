@@ -32,7 +32,7 @@ class Maze():
                             Point(0,0),Point(self.cell_size_x,self.cell_size_y)
                             )
                         )
-                if i != j and i == 0:
+                elif i != j and i == 0:
                     column.append(
                         Cell(
                             Point(0,0),Point((i+1)*self.cell_size_x, (j+1)*self.cell_size_y)
@@ -53,5 +53,8 @@ class Maze():
                 self._animate()
 
     def _animate(self):
-        self.win.redraw()
+        if self.win is None: 
+            return
+        else: 
+            self.win.redraw()
         time.sleep(0.05)

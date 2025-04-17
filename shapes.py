@@ -25,7 +25,8 @@ class Cell():
         self.has_top_wall = True
         self.has_bottom_wall = True
     
-    def draw(self, canvas):
+    def draw(self, canvas = None):
+        if canvas is None: return
         if self.has_left_wall:
             start = Point(self._x1, self._y1)
             end = Point(self._x1, self._y2)
