@@ -14,6 +14,8 @@ class Maze():
     ):
         self.x1 = x1
         self.y1 = y1
+        if num_rows == 0 or num_cols == 0:
+            raise ValueError("Incorrect number of rows or columns")
         self.num_rows = num_rows
         self.num_cols = num_cols
         self.cell_size_x = cell_size_x
