@@ -49,5 +49,11 @@ class Tests(unittest.TestCase):
             m1 = Maze(0, 0, num_rows, num_cols, 10, 10)
         self.assertTrue("Incorrect number of rows or columns" in str(context.exception))
 
+    def test_start_and_finish(self):
+        m1 = Maze(0, 0, 12, 12, 10, 10)
+        m1._break_entrance_and_exit()
+        self.assertFalse(m1._cells[0][0].has_top_wall)
+        self.assertFalse(m1._cells[-1][-1].has_bottom_wall)
+
 if __name__ == "__main__":
     unittest.main()
