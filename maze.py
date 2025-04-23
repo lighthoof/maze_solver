@@ -75,4 +75,47 @@ class Maze():
         pass
 
     def _break_Walls_r(self, i, j):
-        pass
+        self._cells[i][j].visited = True
+        while True:
+            to_visit = []
+            if i == 0 and j == 0:
+                if not self._get_visited(i, j + 1): to_visit.append((i, j + 1))
+                if not self._get_visited(i + 1, j): to_visit.append((i + 1, j))
+            elif i == 0 and j != 0:
+                if not self._get_visited(i, j + 1): to_visit.append((i, j + 1))
+                if not self._get_visited(i + 1, j): to_visit.append((i + 1, j))
+                if not self._get_visited(i, j - 1): to_visit.append((i, j - 1))
+            elif i != 0 and j == 0:
+                if not self._get_visited(i, j + 1): to_visit.append((i, j + 1))
+                if not self._get_visited(i + 1, j): to_visit.append((i + 1, j))
+                if not self._get_visited(i - 1, j): to_visit.append((i - 1, j))
+            else:
+                if not self._get_visited(i, j + 1): to_visit.append((i, j + 1))
+                if not self._get_visited(i, j - 1): to_visit.append((i, j - 1))
+                if not self._get_visited(i + 1, j): to_visit.append((i + 1, j))
+                if not self._get_visited(i - 1, j): to_visit.append((i - 1, j))
+
+            if len(to_visit) == 0:
+                self._cells[i][j].draw()
+                return
+            
+            (k, m) = random.choice(to_visit)
+            if k > i and m == j:
+                self._cells[i][j].has_right_wall = False
+                self._cells[k][m].has_left_Wall = False
+            elif k < i and m == j:
+                self._cells[i][j].has_left_wall = False
+                self._cells[k][m].has_right_Wall = False
+            elif k == i and m > j:
+                self._cells[i][j].has_bottom_wall = False
+                self._cells[k][m].has_top_Wall = False
+            elif k == i and m < j:
+                self._cells[i][j].has_top_wall = False
+                self._cells[k][m].has_bottom_Wall = False
+            
+            self._cells[i][j].draw()
+            self._break_Walls_r(k, m)
+
+
+    def _get_visited(self, i, j):
+        return self._cells[i][j].visited
