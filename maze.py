@@ -7,8 +7,8 @@ class Maze():
         self,
         x1,
         y1,
-        num_rows,
         num_cols,
+        num_rows,
         cell_size_x,
         cell_size_y,
         win = None,
@@ -16,6 +16,7 @@ class Maze():
     ):
         self.x1 = x1
         self.y1 = y1
+        self.anchor_offset = 1
         if num_rows == 0 or num_cols == 0:
             raise ValueError("Incorrect number of rows or columns")
         self.num_rows = num_rows
@@ -32,23 +33,31 @@ class Maze():
         for i in range(self.num_cols):
             column = []
             for j in range(self.num_rows):
-                if i == j and i == 0:
+                if i == 0 and j == 0:
                     column.append(
                         Cell(
-                            Point(0,0),Point(self.cell_size_x,self.cell_size_y)
+                            Point(self.anchor_offset,self.anchor_offset),
+                            Point(self.cell_size_x + self.anchor_offset,
+                                  self.cell_size_y + self.anchor_offset), 
+                            self.win
                             )
                         )
-                elif i != j and i == 0:
+                elif i == 0 and j != 0:
                     column.append(
                         Cell(
-                            Point(0,0),Point((i+1)*self.cell_size_x, (j+1)*self.cell_size_y)
+                            Point(self.anchor_offset, j * self.cell_size_y + self.anchor_offset),
+                            Point((i+1)*self.cell_size_x + self.anchor_offset, 
+                                  (j+1)*self.cell_size_y + self.anchor_offset) ,
+                            self.win
                             )
                         )
                 else:    
                     column.append(
                         Cell(
-                            Point(i * self.cell_size_x, j * self.cell_size_y),
-                            Point((i+1)*self.cell_size_x, (j+1)*self.cell_size_y)
+                            Point(i * self.cell_size_x + self.anchor_offset,
+                                   j * self.cell_size_y + self.anchor_offset),
+                            Point((i+1)*self.cell_size_x + self.anchor_offset, 
+                                  (j+1)*self.cell_size_y + self.anchor_offset), self.win
                             )
                         )
             self._cells.append(column)
@@ -56,7 +65,8 @@ class Maze():
         for column in self._cells:
             for cell in column:
                 cell.draw()
-                self._animate()
+                #self._animate()
+        
 
     def _animate(self):
         if self.win is None: 
@@ -68,13 +78,12 @@ class Maze():
     def _break_entrance_and_exit(self):
         self._cells[0][0].has_top_wall = False
         self._cells[0][0].draw()
+        self._animate()
         self._cells[-1][-1].has_bottom_wall = False
         self._cells[-1][-1].draw()
+        self._animate()
 
-    def _break_walls(self):
-        pass
-
-    def _break_Walls_r(self, i, j):
+    def _break_walls_r(self, i = 0, j = 0):
         self._cells[i][j].visited = True
         while True:
             to_visit = []
@@ -97,8 +106,8 @@ class Maze():
 
             if len(to_visit) == 0:
                 self._cells[i][j].draw()
+                self._animate()
                 return
-            
             (k, m) = random.choice(to_visit)
             if k > i and m == j:
                 self._cells[i][j].has_right_wall = False
@@ -114,8 +123,49 @@ class Maze():
                 self._cells[k][m].has_bottom_Wall = False
             
             self._cells[i][j].draw()
-            self._break_Walls_r(k, m)
+            self._break_walls_r(k, m)
+
 
 
     def _get_visited(self, i, j):
+        if i >= len(self._cells) or j >= len(self._cells[0]) : return True
         return self._cells[i][j].visited
+    
+    def _reset_cells_visited(self):
+        for column in self._cells:
+            for cell in column:
+                cell.visited = False
+
+    def solve(self):
+        self._reset_cells_visited()
+        return self._solve_r()
+
+    def _solve_r(self, i = 0, j = 0):
+        self._animate()
+        self._cells[i][j].visited = True
+        if i == len(self._cells) - 1 and j == len(self._cells[i]) - 1:
+            return True
+
+        cell = self._cells[i][j]
+        if not cell.has_top_wall and not self._cells[i][j - 1].visited:
+            cell.draw_move(self._cells[i][j - 1])
+            if self._solve_r(i, j - 1):
+                return True
+            cell.draw_move(self._cells[i][j - 1], True)
+        if not cell.has_right_wall and not self._cells[i + 1][j].visited:
+            cell.draw_move(self._cells[i + 1][j])
+            if self._solve_r(i + 1, j):
+                return True
+            cell.draw_move(self._cells[i + 1][j], True)
+        if not cell.has_bottom_wall and not self._cells[i][j + 1].visited:
+            cell.draw_move(self._cells[i][j + 1])
+            if self._solve_r(i, j + 1):
+                return True
+            cell.draw_move(self._cells[i][j + 1], True)
+        if not cell.has_left_wall and not self._cells[i - 1][j].visited:
+            cell.draw_move(self._cells[i - 1][j])
+            if self._solve_r(i - 1, j):
+                return True
+            cell.draw_move(self._cells[i - 1][j], True)
+
+        return False
