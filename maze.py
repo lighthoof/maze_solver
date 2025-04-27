@@ -47,7 +47,7 @@ class Maze():
                         Cell(
                             Point(self.anchor_offset, j * self.cell_size_y + self.anchor_offset),
                             Point((i+1)*self.cell_size_x + self.anchor_offset, 
-                                  (j+1)*self.cell_size_y + self.anchor_offset) ,
+                                  (j+1)*self.cell_size_y + self.anchor_offset),
                             self.win
                             )
                         )
@@ -57,7 +57,8 @@ class Maze():
                             Point(i * self.cell_size_x + self.anchor_offset,
                                    j * self.cell_size_y + self.anchor_offset),
                             Point((i+1)*self.cell_size_x + self.anchor_offset, 
-                                  (j+1)*self.cell_size_y + self.anchor_offset), self.win
+                                  (j+1)*self.cell_size_y + self.anchor_offset), 
+                            self.win
                             )
                         )
             self._cells.append(column)
@@ -111,20 +112,19 @@ class Maze():
             (k, m) = random.choice(to_visit)
             if k > i and m == j:
                 self._cells[i][j].has_right_wall = False
-                self._cells[k][m].has_left_Wall = False
+                self._cells[k][m].has_left_wall = False
             elif k < i and m == j:
                 self._cells[i][j].has_left_wall = False
-                self._cells[k][m].has_right_Wall = False
+                self._cells[k][m].has_right_wall = False
             elif k == i and m > j:
                 self._cells[i][j].has_bottom_wall = False
-                self._cells[k][m].has_top_Wall = False
+                self._cells[k][m].has_top_wall = False
             elif k == i and m < j:
                 self._cells[i][j].has_top_wall = False
-                self._cells[k][m].has_bottom_Wall = False
+                self._cells[k][m].has_bottom_wall = False
             
             self._cells[i][j].draw()
             self._break_walls_r(k, m)
-
 
 
     def _get_visited(self, i, j):
@@ -148,24 +148,28 @@ class Maze():
 
         cell = self._cells[i][j]
         if not cell.has_top_wall and not self._cells[i][j - 1].visited:
-            cell.draw_move(self._cells[i][j - 1])
-            if self._solve_r(i, j - 1):
-                return True
-            cell.draw_move(self._cells[i][j - 1], True)
+            if j - 1 >= 0:
+                cell.draw_move(self._cells[i][j - 1])
+                if self._solve_r(i, j - 1):
+                    return True
+                cell.draw_move(self._cells[i][j - 1], True)
         if not cell.has_right_wall and not self._cells[i + 1][j].visited:
-            cell.draw_move(self._cells[i + 1][j])
-            if self._solve_r(i + 1, j):
-                return True
-            cell.draw_move(self._cells[i + 1][j], True)
+            if i + 1 < len(self._cells):
+                cell.draw_move(self._cells[i + 1][j])
+                if self._solve_r(i + 1, j):
+                    return True
+                cell.draw_move(self._cells[i + 1][j], True)
         if not cell.has_bottom_wall and not self._cells[i][j + 1].visited:
-            cell.draw_move(self._cells[i][j + 1])
-            if self._solve_r(i, j + 1):
-                return True
-            cell.draw_move(self._cells[i][j + 1], True)
+            if j + 1 < len(self._cells[i]):
+                cell.draw_move(self._cells[i][j + 1])
+                if self._solve_r(i, j + 1):
+                    return True
+                cell.draw_move(self._cells[i][j + 1], True)
         if not cell.has_left_wall and not self._cells[i - 1][j].visited:
-            cell.draw_move(self._cells[i - 1][j])
-            if self._solve_r(i - 1, j):
-                return True
-            cell.draw_move(self._cells[i - 1][j], True)
+            if i - 1 >= 0:
+                cell.draw_move(self._cells[i - 1][j])
+                if self._solve_r(i - 1, j):
+                    return True
+                cell.draw_move(self._cells[i - 1][j], True)
 
         return False
